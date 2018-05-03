@@ -36,6 +36,8 @@ class CSI_get:
     def Get_CSI(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" CSI"
         result = str(check_output(cmd, shell=True))
+        if(len(result) < self.Get_Nrx(Packet_Number)*self.Get_Ntx(Packet_Number)*30):
+            return "CSI size is error"
         pos1 = 0
         pos2 = 0
         pos3 = 0
@@ -60,21 +62,33 @@ class CSI_get:
         return CSI_Box
     
     def Complete_Format(self,Packet_Number):
-        self.Bfee_count = self.Get_Bfee_count(Packet_Number)
-        self.Perm = self.Get_Perm(Packet_Number)
-        self.Nrx = self.Get_Nrx(Packet_Number)
-        self.Ntx = self.Get_Ntx(Packet_Number)
-        self.Noise = self.Get_Noise(Packet_Number)
-        self.RSSI = self.Get_RSSI(Packet_Number)
-        self.CSI = np.sort_complex(np.zeros((30,3,2)))
+        Bfee_count = self.Get_Bfee_count(Packet_Number)
+        Perm = self.Get_Perm(Packet_Number)
+        Nrx = self.Get_Nrx(Packet_Number)
+        Ntx = self.Get_Ntx(Packet_Number)
+        Noise = self.Get_Noise(Packet_Number)
+        RSSI = self.Get_RSSI(Packet_Number)
+        CSI = np.sort_complex(np.zeros((30,3,2)))
         #self.CSI = np.complex(self.CSI)
         CSI_Packet = self.Get_CSI(Packet_Number)
+        if(len(CSI_Packet) < 20):
+            return CSI_Packet
         count = 0
         for Subcarrier in range(30):
             for Nrx in range(3):
                 for Ntx in range(2):
-                    self.CSI[Subcarrier,Nrx,Ntx] = CSI_Packet[count]
+                    CSI[Subcarrier,Nrx,Ntx] = CSI_Packet[count]
                     count = count + 1
-        
-CSI = CSI_get("<PATH>")
-print(CSI.Complete_Format(5))
+        return [Bfee_count,Perm,Nrx,Ntx,Noise,RSSI,CSI]
+
+    def Muilt_data(self,L_Range,H_Rang):
+        Box = []
+        buff = 0
+        for Packet_number in range(H_Rang-L_Range):
+            if(self.Get_Bfee_count(Packet_number) != buff):
+                Box.append(self.Complete_Format(Packet_number))
+                buff = self.Get_Bfee_count(Packet_number)
+        return Box
+
+CSI = CSI_get("D:\\octave\\170109_2432st_09.dat")
+print(CSI.Muilt_data(0,20))
