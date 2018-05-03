@@ -1,5 +1,7 @@
 from subprocess import check_output
 import numpy as np
+import matplotlib.pyplot as plt
+
 class CSI_get:
     def __init__(self,path):
         self.Path = "\""+path+"\""
@@ -91,4 +93,33 @@ class CSI_get:
         return Box
 
 CSI = CSI_get("D:\\octave\\170109_2432st_09.dat")
-print(CSI.Muilt_data(0,20))
+time = []
+point1 = []
+point2 = []
+point3 = []
+point4 = []
+point5 = []
+point6 = []
+CSI_result = CSI.Get_CSI(1)
+
+for subcarrier in range(0,180,6):
+    point1.append(abs(CSI_result[subcarrier]))
+    point2.append(abs(CSI_result[subcarrier+1]))
+    point3.append(abs(CSI_result[subcarrier+2]))
+    point4.append(abs(CSI_result[subcarrier+3]))
+    point5.append(abs(CSI_result[subcarrier+4]))
+    point6.append(abs(CSI_result[subcarrier+5]))
+
+for time_index in range(30):
+    time.append(time_index)
+
+plt.axis([0, 30, 0, 60])
+plt.xlabel('subcarrier')
+plt.ylabel('amplitude(db)') 
+plt.plot(time,point1,'b')
+plt.plot(time,point2,'b')
+plt.plot(time,point3,'g')
+plt.plot(time,point4,'g')
+plt.plot(time,point5,'r')
+plt.plot(time,point6,'r')
+plt.show()
