@@ -46,7 +46,8 @@ void Find_PacketID(const char* path, Packet* buff,long Packet_number)
         Find_ID_Position(fileptr,positive_XY,Packet_number++);
 	    fseek(fileptr,positive_XY[0],SEEK_SET);
         inBytes = (unsigned char*)malloc(sizeof(unsigned char)*(positive_XY[1]-positive_XY[0]));
-	    fread(inBytes,1,positive_XY[1]-positive_XY[0],fileptr);
+	    if(inBytes==NULL){printf("Memory Leak");exit(2);}
+        fread(inBytes,1,positive_XY[1]-positive_XY[0],fileptr);
         //Analysis Packet
         buff->timestamp_low = inBytes[0] + (inBytes[1] << 8) +
 		    (inBytes[2] << 16) + (inBytes[3] << 24);
