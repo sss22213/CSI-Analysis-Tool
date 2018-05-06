@@ -1,6 +1,7 @@
 from subprocess import check_output
 import numpy as np
 import matplotlib.pyplot as plt
+from plot_CSI import *
 
 class CSI_get:
     def __init__(self,path):
@@ -93,34 +94,7 @@ class CSI_get:
         return Box
 
 if __name__ == '__main__':
-    CSI = CSI_get("F:\\CSI\\Location_CSI\\01\\170109_2432st_01.dat")
-    time = []
-    point1 = []
-    point2 = []
-    point3 = []
-    point4 = []
-    point5 = []
-    point6 = []
-    CSI_result = CSI.Get_CSI(10)
-
-    for subcarrier in range(0,180,6):
-        point1.append(abs(CSI_result[subcarrier]))
-        point2.append(abs(CSI_result[subcarrier+1]))
-        point3.append(abs(CSI_result[subcarrier+2]))
-        point4.append(abs(CSI_result[subcarrier+3]))
-        point5.append(abs(CSI_result[subcarrier+4]))
-        point6.append(abs(CSI_result[subcarrier+5]))
-
-    for time_index in range(1,31,1):
-        time.append(time_index)
-
-    plt.axis([1, 30, 0, 100])
-    plt.xlabel('subcarrier')
-    plt.ylabel('amplitude(db)') 
-    plt.plot(time,point1,'b')
-    plt.plot(time,point2,'b')
-    plt.plot(time,point3,'g')
-    plt.plot(time,point4,'g')
-    plt.plot(time,point5,'r')
-    plt.plot(time,point6,'r')
-    plt.show()
+    CSI = plot_CSI("D:\\CSI_dat\\170109_2432st_09.dat")
+    #CSI.plot_CSI_six_animation([100,120,1],'Slow')
+    CSI.plot_CSI_six(120)
+   
