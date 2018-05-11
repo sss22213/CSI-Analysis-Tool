@@ -5,8 +5,10 @@ int main(int argc,char *argv[])
 {
     Packet *obj = New_Packet();
     int Packet_Number = atoi(argv[2]);
-    Find_PacketID(argv[1],obj,Packet_Number);
-    if(!strcmp(argv[3],"Bfee_count"))printf("%d",obj->bfee_count);
+    int result = Find_PacketID(argv[1],obj,Packet_Number);
+    //Skip to not found 
+    if(result)printf("1");
+    else if(!strcmp(argv[3],"Bfee_count"))printf("%d",obj->bfee_count);
     else if(!strcmp(argv[3],"Perm"))printf("%d,%d,%d", obj->perm[0], obj->perm[1], obj->perm[2]);
     else if(!strcmp(argv[3],"Nrx"))printf("%d",obj->Nrx);
     else if(!strcmp(argv[3],"Ntx"))printf("%d",obj->Ntx);

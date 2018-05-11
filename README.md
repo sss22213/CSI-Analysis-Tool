@@ -6,6 +6,12 @@ Ming Chuan University
 
 Department of Electronic Engineering
 
+Version 4(20180512)
+
+    Fix Muilt Bug
+    
+    Add "Not found" (return 1)
+
 Version 3(20180506)
 
     Add plot_CSI_six_animation(Packet_range,Speed)

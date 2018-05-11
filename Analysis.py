@@ -2,34 +2,53 @@ from subprocess import check_output
 import numpy as np
 import matplotlib.pyplot as plt
 from plot_CSI import *
+from matplotlib.mlab import PCA
 
 class CSI_get:
     def __init__(self,path):
         self.Path = "\""+path+"\""
 
+    def Check_effection(self,Packet_Number):
+        cmd = "main "+self.Path+" "+str(Packet_Number)+" Bfee_count"
+        if check_output(cmd, shell=True)==b'1':
+            return 1
+        else:
+            return 0
     def Get_Bfee_count(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Bfee_count"
+        if self.Check_effection(Packet_Number):
+            return 1
         return int(check_output(cmd, shell=True))
 
     def Get_Perm(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Perm"
+        if self.Check_effection(Packet_Number):
+            return 1
         result = str(check_output(cmd, shell=True))
         return [int(result[2]),int(result[4]),int(result[6])]
 
     def Get_Nrx(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Nrx"
+        if self.Check_effection(Packet_Number):
+            return 1
         return int(check_output(cmd, shell=True))
 
     def Get_Ntx(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Ntx"
+        if self.Check_effection(Packet_Number):
+            return 1
         return int(check_output(cmd, shell=True))
 
     def Get_Noise(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Noise"
+        if self.Check_effection(Packet_Number):
+            return 1
         return int(check_output(cmd, shell=True))
 
     def Get_RSSI(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" RSSI"
+        if self.Check_effection(Packet_Number):
+            return 1
         result = str(check_output(cmd, shell=True))
         pos1 = result.find(',')
         pos2 = result.find(',', pos1+1)
@@ -38,6 +57,8 @@ class CSI_get:
 
     def Get_CSI(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" CSI"
+        if self.Check_effection(Packet_Number):
+            return 1
         result = str(check_output(cmd, shell=True))
         if(len(result) < self.Get_Nrx(Packet_Number)*self.Get_Ntx(Packet_Number)*30):
             return "CSI size is error"
@@ -65,6 +86,8 @@ class CSI_get:
         return CSI_Box
     
     def Complete_Format(self,Packet_Number):
+        if self.Check_effection(Packet_Number):
+            return 1
         Bfee_count = self.Get_Bfee_count(Packet_Number)
         Perm = self.Get_Perm(Packet_Number)
         Nrx = self.Get_Nrx(Packet_Number)
@@ -94,7 +117,6 @@ class CSI_get:
         return Box
 
 if __name__ == '__main__':
-    CSI = plot_CSI("D:\\CSI_dat\\170109_2432st_09.dat")
-    #CSI.plot_CSI_six_animation([100,120,1],'Slow')
-    CSI.plot_CSI_six(120)
+    CSI = CSI_get("0537_6011_1.dat")
+    print(CSI.Get_Bfee_count(666))
    

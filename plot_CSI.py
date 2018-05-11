@@ -8,14 +8,13 @@ class plot_CSI:
 
     def plot_CSI_six(self,Packet):
         self.plot_CSI_six_animation([Packet,Packet+1,1],'slow')
-
     '''
     Speed:
         Slow: 1
         Common: 0.1
         Fast: 0.01
     Packet_range:
-        [low,high,step]
+        [low,high]
     '''
     def plot_CSI_six_animation(self,Packet_range,Speed):
         time = []
@@ -39,14 +38,20 @@ class plot_CSI:
             speed = 1
 
         #Setting packet range
-        low,high,step = Packet_range
-        num = (high - low)//step
+        low,high = Packet_range
+        step = 1
+        num = (high - low)//step + 1
         count = low
         buff = 0
         for index in range(num):
             #Check effective packet
             while(self.CSI.Get_Bfee_count(count) == buff):
+                #Not found Check_effection(Packet_Number)
                 count = count + 1
+            #Check
+            if(self.CSI.Check_effection(count)):
+                    print("Packet "+str(count)+" not found")
+                    return 1
             Bfee_count =self.CSI.Get_Bfee_count(count)
             buff = Bfee_count
             CSI_result = self.CSI.Get_CSI(count)
@@ -61,7 +66,7 @@ class plot_CSI:
             plt.cla()
             plt.pause(0.0001)
             plt.axis([1, 30, 0, 100])
-            plt.title('packet:'+str(index)+',Real packet:'+str(count)+',Bfee_count:'+str(Bfee_count))
+            plt.title('packet:'+str(index + 1)+',Real packet:'+str(count)+',Bfee_count:'+str(Bfee_count))
             plt.xlabel('subcarrier')
             plt.ylabel('amplitude(db)') 
             plt.plot(time,point1,'b')

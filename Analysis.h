@@ -17,7 +17,7 @@ typedef struct _Packet
     int *csi;
 }Packet;
 Packet *New_Packet(void);
-void Find_PacketID(const char*,Packet*,long);
+int Find_PacketID(const char*,Packet*,long);
 void Delete_Packet(Packet*);
 
 #endif

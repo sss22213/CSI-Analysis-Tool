@@ -1,5 +1,5 @@
 #include "Analysis.h"
-void Find_ID_Position(FILE *fileptr,long* positive_XY,int Positive)
+int Find_ID_Position(FILE *fileptr,long* positive_XY,int Positive)
 {
     //Find Packet number
     unsigned int *field_len = (unsigned int*)malloc(sizeof(unsigned int));
@@ -19,7 +19,7 @@ void Find_ID_Position(FILE *fileptr,long* positive_XY,int Positive)
         do
         {
             fread(code,1,1,fileptr);
-            if(ftell(fileptr) >= File_end){printf("Not found");exit(2);}
+            if(ftell(fileptr) >= File_end){return 1;}
         }
         while(*code!=187);
         *positive_XY = ftell(fileptr);
@@ -28,8 +28,9 @@ void Find_ID_Position(FILE *fileptr,long* positive_XY,int Positive)
         fread(field_len,1,2,fileptr);
     }
     *(positive_XY+1) = ftell(fileptr) + *field_len;
+    return 0;
 }
-void Find_PacketID(const char* path, Packet* buff,long Packet_number)
+int Find_PacketID(const char* path, Packet* buff,long Packet_number)
 {
     FILE *fileptr;
     fileptr = fopen(path,"rb");
@@ -43,7 +44,7 @@ void Find_PacketID(const char* path, Packet* buff,long Packet_number)
     //Check Packet is exist or not
     do
     {
-        Find_ID_Position(fileptr,positive_XY,Packet_number++);
+        if (Find_ID_Position(fileptr,positive_XY,Packet_number++))return 1;
 	    fseek(fileptr,positive_XY[0],SEEK_SET);
         inBytes = (unsigned char*)malloc(sizeof(unsigned char)*(positive_XY[1]-positive_XY[0]));
 	    if(inBytes==NULL){printf("Memory Leak");exit(2);}
@@ -95,6 +96,7 @@ void Find_PacketID(const char* path, Packet* buff,long Packet_number)
 	buff->perm[1] = ((antenna_sel >> 2) & 0x3) + 1;
 	buff->perm[2] = ((antenna_sel >> 4) & 0x3) + 1;
     fclose(fileptr);
+    return 0;
 }
 Packet *New_Packet(void)
 {
