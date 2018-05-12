@@ -12,6 +12,8 @@ Version 4(20180512)
     
     Add "Not found" (return 1)
 
+    Add Analysis_Hugo (fast,but use more memory)
+
 Version 3(20180506)
 
     Add plot_CSI_six_animation(Packet_range,Speed)

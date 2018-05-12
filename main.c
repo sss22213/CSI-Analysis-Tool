@@ -15,7 +15,7 @@ int main(int argc,char *argv[])
     else if(!strcmp(argv[3],"Noise"))printf("%d",obj->noise);
     else if(!strcmp(argv[3],"RSSI"))printf("%u,%u,%u",obj->rssi_a,obj->rssi_b,obj->rssi_c);
     else if(!strcmp(argv[3],"CSI"))for(int i = 0 ; i < 360 ; i+=2)printf("$%d,%d|",obj->csi[i],obj->csi[i+1]);
-    else if(!strcmp(argv[3],"Num"))printf("%d",Packet_count("0537_6011_1.dat"));
+    else if(!strcmp(argv[3],"Num"))printf("%d",Packet_count(argv[1]));
     Delete_Packet(obj);
     return 0;
 }

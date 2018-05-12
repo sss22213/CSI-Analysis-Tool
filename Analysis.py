@@ -133,5 +133,5 @@ class CSI_get:
 
 if __name__ == '__main__':
     CSI = CSI_get("0537_6011_1.dat")
-    print(CSI.Check_Packet_Count())
+    print(CSI.Get_Bfee_count(666))
    

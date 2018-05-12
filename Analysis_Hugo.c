@@ -34,14 +34,14 @@ int Packet_count(const char* path)
     fclose(fileptr);
     return count;
 }
-int Find_ID_Position(unsigned char *Space,long *positive_l,int Positive)
+int Find_ID_Position(unsigned char *Space,long *positive_l,int Positive,long tail)
 {
     long point_location = 0;
-    // Need 3 bytes -- 2 byte size field and 1 byte code
     for(int i = 0; i < Positive ; i++)
     {
         do{
             point_location ++;
+            if(point_location >= tail)return 1;
         }while(*(Space + point_location)!=187);
     }
     *positive_l = point_location + 1;
@@ -67,7 +67,7 @@ int Find_PacketID(const char* path, Packet* buff,long Packet_number)
     //Check Packet is exist or not
     do
     {
-        if (Find_ID_Position(inBytes,&positive_XY,Packet_number++))return 1;
+        if (Find_ID_Position(inBytes,&positive_XY,Packet_number++,End_file))return 1;
         inBytes = inBytes + positive_XY;
         //Analysis Packet
         buff->timestamp_low = inBytes[0] + (inBytes[1] << 8) +
