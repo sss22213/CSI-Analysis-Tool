@@ -19,5 +19,5 @@ typedef struct _Packet
 Packet *New_Packet(void);
 int Find_PacketID(const char*,Packet*,long);
 void Delete_Packet(Packet*);
-
+int Packet_count(const char*);
 #endif

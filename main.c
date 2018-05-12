@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 int main(int argc,char *argv[])
-{
+{   
     Packet *obj = New_Packet();
     int Packet_Number = atoi(argv[2]);
     int result = Find_PacketID(argv[1],obj,Packet_Number);
@@ -15,6 +15,7 @@ int main(int argc,char *argv[])
     else if(!strcmp(argv[3],"Noise"))printf("%d",obj->noise);
     else if(!strcmp(argv[3],"RSSI"))printf("%u,%u,%u",obj->rssi_a,obj->rssi_b,obj->rssi_c);
     else if(!strcmp(argv[3],"CSI"))for(int i = 0 ; i < 360 ; i+=2)printf("$%d,%d|",obj->csi[i],obj->csi[i+1]);
+    else if(!strcmp(argv[3],"Num"))printf("%d",Packet_count("0537_6011_1.dat"));
     Delete_Packet(obj);
     return 0;
 }

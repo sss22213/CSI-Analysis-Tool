@@ -8,6 +8,21 @@ class CSI_get:
     def __init__(self,path):
         self.Path = "\""+path+"\""
 
+    def Check_Packet_Count(self):
+        cmd = "main "+self.Path+" "+str(1)+" Num"
+        return int(check_output(cmd, shell=True))
+
+    def Check_Effection_Packet(self):
+        Eff_Packet = []
+        Packet_Number = 1
+        while True:
+            if self.Check_effection(Packet_Number):
+                print("OK")
+                break
+            Packet_Number = Packet_Number + 1
+            Eff_Packet.append(Packet_Number)
+        return Eff_Packet
+
     def Check_effection(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Bfee_count"
         if check_output(cmd, shell=True)==b'1':
@@ -118,5 +133,5 @@ class CSI_get:
 
 if __name__ == '__main__':
     CSI = CSI_get("0537_6011_1.dat")
-    print(CSI.Get_Bfee_count(666))
+    print(CSI.Check_Packet_Count())
    

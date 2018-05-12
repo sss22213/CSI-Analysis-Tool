@@ -1,9 +1,9 @@
 CC = gcc
 py = python #python3
 
-all: Analysis.c Analysis.h main.c
+all:
 	clear
-	${CC} Analysis.c Analysis.h main.c -o main
+	${CC} Analysis.h Analysis_Hugo.c main.c -o main -g -Wall
 	python Analysis.py
 
 clear: main.exe main

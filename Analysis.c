@@ -1,4 +1,65 @@
 #include "Analysis.h"
+int Packet_count(const char* path)
+{
+    //Open File
+    FILE *fileptr;
+    fileptr = fopen(path,"rb");
+    //declare
+    unsigned int len = 1;
+    unsigned int calc_len = 0;
+    unsigned char* inBytes;
+    //Find Packet number
+    unsigned int *field_len = (unsigned int*)malloc(sizeof(unsigned int));
+    if(field_len==NULL){printf("Memory Leak");exit(2);}
+
+    unsigned char *code = (unsigned char*)malloc(sizeof(unsigned char));
+    if(code==NULL){printf("Memory Leak");exit(2);}
+    //
+    long Location_head = 0;
+    long Location_tail = 0;
+    //Find file head
+    fseek(fileptr,0,SEEK_END);
+    long File_end = ftell(fileptr);
+    //Packet Count
+    long Count = 0;
+    //Percent
+    int Percent_prv = 0;
+    int Percent_nxt = 0;
+    //From Head
+    rewind(fileptr);
+    // Need 3 bytes -- 2 byte size field and 1 byte code
+    while(Percent_prv < 99)
+    {
+         //find Code
+        do{fread(code,1,1,fileptr);}while(*code!=187);
+        Location_head = ftell(fileptr);
+        //find field_len
+        fseek(fileptr,-2,SEEK_CUR);
+        fread(field_len,1,2,fileptr);
+        //Backup Now File locaton
+        long Now_point = ftell(fileptr);
+        Location_tail = ftell(fileptr) + *field_len;
+        //Read file
+        fseek(fileptr,Location_head,SEEK_SET);
+        inBytes = (unsigned char*)malloc(sizeof(unsigned char)*(Location_tail-Location_head));
+	    if(inBytes==NULL){printf("Memory Leak");exit(2);}
+        //Check Packet(Move file point to location of read)
+        fread(inBytes,1,(Location_tail - Location_head),fileptr);
+        int Nrx = inBytes[8];
+	    int Ntx = inBytes[9];
+        len = inBytes[16] + (inBytes[17] << 8);
+	    calc_len = (30 * (Nrx * Ntx * 8 * 2 + 3) + 7) / 8;
+        if(len == calc_len)++Count;
+        free(inBytes);
+        inBytes = NULL;
+        //Next
+        fseek(fileptr,Now_point,SEEK_SET);
+        Percent_nxt = (float)Now_point/(float)File_end*100;
+        Percent_prv = Percent_nxt;
+    }
+    fclose(fileptr);
+    return Count;
+}
 int Find_ID_Position(FILE *fileptr,long* positive_XY,int Positive)
 {
     //Find Packet number
@@ -20,8 +81,7 @@ int Find_ID_Position(FILE *fileptr,long* positive_XY,int Positive)
         {
             fread(code,1,1,fileptr);
             if(ftell(fileptr) >= File_end){return 1;}
-        }
-        while(*code!=187);
+        }while(*code!=187);
         *positive_XY = ftell(fileptr);
         //find field_len
         fseek(fileptr,-2,SEEK_CUR);
@@ -91,7 +151,6 @@ int Find_PacketID(const char* path, Packet* buff,long Packet_number)
 			index += 16;
 		}
 	}
-	/* Compute the permutation array */
 	buff->perm[0] = ((antenna_sel) & 0x3) + 1;
 	buff->perm[1] = ((antenna_sel >> 2) & 0x3) + 1;
 	buff->perm[2] = ((antenna_sel >> 4) & 0x3) + 1;
