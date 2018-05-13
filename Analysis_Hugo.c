@@ -1,30 +1,32 @@
 #include "Analysis.h"
-/*
-int *Packet_Effection_Packet_Number(const char* path,unsigned int Packet_number)
-{
-  
+int* Packet_count_packet(Packet* obj)
+{ 
+    long Total_Num = Packet_count(obj);
+    unsigned int* Box = (unsigned int*)malloc(sizeof(unsigned int)*Total_Num);
+    if(Box==NULL){printf("Memory Leak");exit(2);}
+    long Packet_number = 0;
+    long index = 0;
+    while(Total_Num > 0)
+    {
+        if(!Packet_effection(obj,Packet_number++))
+        {
+            Box[index] = Packet_number;
+            Total_Num--;
+            index++;
+        }
+    }
+    return Box;
 }
-*/
-int Packet_effection(const char* path,unsigned int Packet_number)
+int Packet_effection(Packet* obj,unsigned int Packet_number)
 {
-    FILE *fileptr;
-    fileptr = fopen(path,"rb");
-    long positive_XY = 0;
+    unsigned char* inBytes = obj->inBytes;
+    long positive_XY = 0;   
     unsigned int len = 1;
     unsigned int calc_len = 0;
     unsigned int agc;
     unsigned int antenna_sel;
     unsigned int fake_rate_n_flags;
-    
-    fseek(fileptr,0,SEEK_END);
-    long End_file = ftell(fileptr);
-    unsigned char *inBytes = (unsigned char*)malloc(sizeof(unsigned char)*End_file);
-    if(inBytes==NULL){printf("Memory Leak");exit(2);}
-    //From Head
-    rewind(fileptr);
-    fread(inBytes,End_file,1,fileptr);
-    fclose(fileptr);
-    if (Find_ID_Position(inBytes,&positive_XY,Packet_number,End_file))return 1;
+    if (Find_ID_Position(inBytes,&positive_XY,Packet_number,obj->file_tail))return 1;
     inBytes = inBytes + positive_XY;
     //Analysis Packet
     unsigned char Nrx = inBytes[8];
@@ -37,19 +39,9 @@ int Packet_effection(const char* path,unsigned int Packet_number)
     if(len != calc_len)return 1;
     else return 0;
 }
-int Packet_count(const char* path)
+int Packet_count(Packet* obj)
 {
-    //Read all file into memory
-    FILE *fileptr;
-    fileptr = fopen(path,"rb");
-    fseek(fileptr,0,SEEK_END);
-    long End_file = ftell(fileptr);
-    unsigned char *Space = (unsigned char*)malloc(sizeof(unsigned char)*End_file);
-    if(Space==NULL){printf("Memory Leak");exit(2);}
-    //From Head
-    rewind(fileptr);
-    fread(Space,End_file,1,fileptr);
-    fclose(fileptr);
+    unsigned char* Space = obj->inBytes;
     //declare
     unsigned char field_len[2];
     long count = 0;
@@ -67,8 +59,7 @@ int Packet_count(const char* path)
         int len = *(Space + point_location + 16) + (*(Space + point_location + 17) << 8);
 	    int calc_len = (30 * (Nrx * Ntx * 8 * 2 + 3) + 7) / 8;
         if(calc_len==len)++count;
-    }while(point_location < End_file - 100);
-    fclose(fileptr);
+    }while(point_location < obj->file_tail - 100);
     return count;
 }
 int Find_ID_Position(unsigned char *Space,long *positive_l,int Positive,long tail)
@@ -84,29 +75,20 @@ int Find_ID_Position(unsigned char *Space,long *positive_l,int Positive,long tai
     *positive_l = point_location + 1;
     return 0;
 }
-int Find_PacketID(const char* path, Packet* buff,long Packet_number)
+int Find_PacketID(Packet* buff,long Packet_number)
 {
-    FILE *fileptr;
-    fileptr = fopen(path,"rb");
+    unsigned char* inBytes = buff->inBytes;
     long positive_XY = 0;
     unsigned int len = 1;
     unsigned int calc_len = 0;
     unsigned int agc;
     unsigned int antenna_sel;
     unsigned int fake_rate_n_flags;
-    fseek(fileptr,0,SEEK_END);
-    long End_file = ftell(fileptr);
-    unsigned char *inBytes = (unsigned char*)malloc(sizeof(unsigned char)*End_file);
-    if(inBytes==NULL){printf("Memory Leak");exit(2);}
-    //From Head
-    rewind(fileptr);
-    fread(inBytes,End_file,1,fileptr);
-    fclose(fileptr);
     //Check Packet is exist or not
     do
     {
-        if(Packet_effection(path,Packet_number))return 1;
-        Find_ID_Position(inBytes,&positive_XY,Packet_number++,End_file);
+        if(Packet_effection(buff,Packet_number))return 1;
+        Find_ID_Position(inBytes,&positive_XY,Packet_number++,buff->file_tail);
         inBytes = inBytes + positive_XY;
         //Analysis Packet
         buff->timestamp_low = inBytes[0] + (inBytes[1] << 8) +
@@ -156,9 +138,19 @@ int Find_PacketID(const char* path, Packet* buff,long Packet_number)
 
     return 0;
 }
-Packet *New_Packet(void)
+Packet *New_Packet(const char* path)
 {
     Packet *Packet_obj = (Packet*)malloc(sizeof(Packet));
+    //Read all of file
+    FILE *fileptr;
+    fileptr = fopen(path,"rb");
+    fseek(fileptr,0,SEEK_END);
+    Packet_obj->file_tail = ftell(fileptr);
+    Packet_obj->inBytes = (unsigned char*)malloc(sizeof(unsigned char)*(Packet_obj->file_tail));
+    if(Packet_obj->inBytes==NULL){printf("Memory Leak");exit(2);}
+    rewind(fileptr);
+    fread(Packet_obj->inBytes,Packet_obj->file_tail,1,fileptr);
+    fclose(fileptr);
     Packet_obj->timestamp_low = 0;
     Packet_obj->bfee_count = 0;
     Packet_obj->Nrx = 0;

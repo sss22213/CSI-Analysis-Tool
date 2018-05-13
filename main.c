@@ -3,14 +3,20 @@
 #include <string.h>
 int main(int argc,char *argv[])
 {   
-    Packet *obj = New_Packet();
+    Packet *obj = New_Packet(argv[1]);
     int Packet_Number = atoi(argv[2]);
-    if(!strcmp(argv[3],"Num"))printf("%d",Packet_count(argv[1]));
-    else if(!strcmp(argv[3],"Packet_effection"))printf("%d",Packet_effection(argv[1],Packet_Number));
+    if(!strcmp(argv[3],"Num"))printf("%d",Packet_count(obj));
+    else if(!strcmp(argv[3],"Packet_effection"))printf("%d",Packet_effection(obj,Packet_Number));
+    else if(!strcmp(argv[3],"Packet_count_packet"))
+    {
+        int* ptr = Packet_count_packet(obj);
+        int Num = Packet_count(obj);
+        for(int i=0; i<Num; i++)printf("%d$",ptr[i]);
+    }
     else
     {
         //Skip to not found 
-        if(Find_PacketID(argv[1],obj,Packet_Number))printf("1");
+        if(Find_PacketID(obj,Packet_Number))printf("1");
         else if(!strcmp(argv[3],"Bfee_count"))printf("%d",obj->bfee_count);
         else if(!strcmp(argv[3],"Perm"))printf("%d,%d,%d", obj->perm[0], obj->perm[1], obj->perm[2]);
         else if(!strcmp(argv[3],"Nrx"))printf("%d",obj->Nrx);

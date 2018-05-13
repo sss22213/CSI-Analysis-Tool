@@ -13,18 +13,10 @@ class CSI_get:
         return int(check_output(cmd, shell=True))
 
     def Check_Effection_Packet(self):
-        Eff_Packet = []
-        Packet_Number = 1
-        Qun = self.Check_Packet_Count()
-        while True:
-            if self.Check_effection(Packet_Number)==0:
-                Eff_Packet.append(Packet_Number)
-                print(Qun)
-                Qun = Qun - 1
-            Packet_Number = Packet_Number + 1
-            if Qun <= 0:
-                break
-        return Eff_Packet
+        cmd = "main "+self.Path+" "+str(1)+" Packet_count_packet"
+        result = str(check_output(cmd, shell=True))
+        Box = result.split('$')
+        return Box
 
     def Check_effection(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Packet_effection"
@@ -146,6 +138,5 @@ class CSI_get:
 
 if __name__ == '__main__':
     CSI = CSI_get("0537_6011_1.dat")
-    for index in range(100):
-        print(CSI.Check_Effection_Packet())
+    print(CSI.Check_Effection_Packet())
    
