@@ -15,11 +15,14 @@ class Database_processing:
     
     def Load_CSI(self,Dir_name):
         file_list = os.listdir(Dir_name)
-        buff = []
+        #Muilt file
         for filename in file_list:
+            #Check direction
             if(os.path.isfile==False)
                 continue
-            
+            #Check quantity
+            Packet_quan = Check_Packet_Count(filename)
+            Muilt_CSI(L_Range,H_Rang)
 
         
             

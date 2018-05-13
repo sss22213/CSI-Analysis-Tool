@@ -15,20 +15,24 @@ class CSI_get:
     def Check_Effection_Packet(self):
         Eff_Packet = []
         Packet_Number = 1
+        Qun = self.Check_Packet_Count()
         while True:
-            if self.Check_effection(Packet_Number):
-                print("OK")
-                break
+            if self.Check_effection(Packet_Number)==0:
+                Eff_Packet.append(Packet_Number)
+                print(Qun)
+                Qun = Qun - 1
             Packet_Number = Packet_Number + 1
-            Eff_Packet.append(Packet_Number)
+            if Qun <= 0:
+                break
         return Eff_Packet
 
     def Check_effection(self,Packet_Number):
-        cmd = "main "+self.Path+" "+str(Packet_Number)+" Bfee_count"
+        cmd = "main "+self.Path+" "+str(Packet_Number)+" Packet_effection"
         if check_output(cmd, shell=True)==b'1':
             return 1
         else:
             return 0
+
     def Get_Bfee_count(self,Packet_Number):
         cmd = "main "+self.Path+" "+str(Packet_Number)+" Bfee_count"
         if self.Check_effection(Packet_Number):
@@ -131,7 +135,17 @@ class CSI_get:
                 buff = self.Get_Bfee_count(Packet_number)
         return Box
 
+    def Muilt_CSI(self,L_Range,H_Rang):
+        Box = []
+        buff = 0
+        for Packet_number in range(H_Rang-L_Range):
+            if(self.Get_Bfee_count(Packet_number) != buff):
+                Box.append(self.Get_CSI(Packet_number))
+                buff = self.Get_Bfee_count(Packet_number)
+        return Box
+
 if __name__ == '__main__':
     CSI = CSI_get("0537_6011_1.dat")
-    print(CSI.Get_Bfee_count(666))
+    for index in range(100):
+        print(CSI.Check_Effection_Packet())
    

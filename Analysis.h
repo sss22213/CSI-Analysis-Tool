@@ -5,6 +5,7 @@
 typedef struct _Packet Packet;
 typedef struct _Packet
 {
+    unsigned char *buff;
     unsigned long timestamp_low;
     unsigned short bfee_count;
     unsigned int Nrx;
@@ -20,4 +21,5 @@ Packet *New_Packet(void);
 int Find_PacketID(const char*,Packet*,long);
 void Delete_Packet(Packet*);
 int Packet_count(const char*);
+int Packet_effection(const char*,unsigned int);
 #endif

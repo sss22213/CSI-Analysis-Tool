@@ -3,7 +3,7 @@ py = python #python3
 
 all:
 	clear
-	${CC} Analysis.h Analysis_Hugo.c main.c -o main -g -Wall
+	${CC} Analysis.h Analysis_Hugo.c main.c -o main
 	python Analysis.py
 
 clear: main.exe main

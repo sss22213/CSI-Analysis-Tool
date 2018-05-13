@@ -1,0 +1,7 @@
+MSYS-1.0.19 Build:2016-07-13 17:45
+Exception: STATUS_ACCESS_VIOLATION at eip=60884710
+eax=0062C4D0 ebx=00001000 ecx=00000185 edx=00000000 esi=0062FFFF edi=0062CEBC
+ebp=0062A468 esp=0062A45C program=C:\Octave\Octave-4.2.2\bin\make.exe
+cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
+Stack trace:
+Frame     Function  Args

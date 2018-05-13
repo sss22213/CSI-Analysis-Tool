@@ -1,4 +1,42 @@
 #include "Analysis.h"
+/*
+int *Packet_Effection_Packet_Number(const char* path,unsigned int Packet_number)
+{
+  
+}
+*/
+int Packet_effection(const char* path,unsigned int Packet_number)
+{
+    FILE *fileptr;
+    fileptr = fopen(path,"rb");
+    long positive_XY = 0;
+    unsigned int len = 1;
+    unsigned int calc_len = 0;
+    unsigned int agc;
+    unsigned int antenna_sel;
+    unsigned int fake_rate_n_flags;
+    
+    fseek(fileptr,0,SEEK_END);
+    long End_file = ftell(fileptr);
+    unsigned char *inBytes = (unsigned char*)malloc(sizeof(unsigned char)*End_file);
+    if(inBytes==NULL){printf("Memory Leak");exit(2);}
+    //From Head
+    rewind(fileptr);
+    fread(inBytes,End_file,1,fileptr);
+    fclose(fileptr);
+    if (Find_ID_Position(inBytes,&positive_XY,Packet_number,End_file))return 1;
+    inBytes = inBytes + positive_XY;
+    //Analysis Packet
+    unsigned char Nrx = inBytes[8];
+	unsigned char Ntx = inBytes[9];
+	agc = inBytes[14];
+	antenna_sel = inBytes[15];
+	len = inBytes[16] + (inBytes[17] << 8);
+	fake_rate_n_flags = inBytes[18] + (inBytes[19] << 8);
+	calc_len = (30 * (Nrx * Ntx * 8 * 2 + 3) + 7) / 8;
+    if(len != calc_len)return 1;
+    else return 0;
+}
 int Packet_count(const char* path)
 {
     //Read all file into memory
@@ -14,7 +52,6 @@ int Packet_count(const char* path)
     fclose(fileptr);
     //declare
     unsigned char field_len[2];
-    long Head = 0;
     long count = 0;
     long point_location = 0;
     do{
@@ -64,10 +101,12 @@ int Find_PacketID(const char* path, Packet* buff,long Packet_number)
     //From Head
     rewind(fileptr);
     fread(inBytes,End_file,1,fileptr);
+    fclose(fileptr);
     //Check Packet is exist or not
     do
     {
-        if (Find_ID_Position(inBytes,&positive_XY,Packet_number++,End_file))return 1;
+        if(Packet_effection(path,Packet_number))return 1;
+        Find_ID_Position(inBytes,&positive_XY,Packet_number++,End_file);
         inBytes = inBytes + positive_XY;
         //Analysis Packet
         buff->timestamp_low = inBytes[0] + (inBytes[1] << 8) +
@@ -90,7 +129,6 @@ int Find_PacketID(const char* path, Packet* buff,long Packet_number)
 	unsigned char *payload = &inBytes[20];
 	char tmp;
 	int size[] = {buff->Nrx, buff->Ntx, 30};
-   
 	// Compute CSI from all this crap :) 
     int CSI_index = 0;
 	for (i = 0; i < 30; ++i)
@@ -115,7 +153,7 @@ int Find_PacketID(const char* path, Packet* buff,long Packet_number)
 	buff->perm[0] = ((antenna_sel) & 0x3) + 1;
 	buff->perm[1] = ((antenna_sel >> 2) & 0x3) + 1;
 	buff->perm[2] = ((antenna_sel >> 4) & 0x3) + 1;
-    fclose(fileptr);
+
     return 0;
 }
 Packet *New_Packet(void)
