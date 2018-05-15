@@ -5,7 +5,7 @@ import os
 #For deep learning
 class Database_processing:
     def __init__(self,Database_Label,Dir_List):
-        self.Database_Label = Data_Label #string
+        self.Database_Label = Database_Label #string
         self.Dir_List = Dir_List #list
         self.DataBox = [] #list
     
@@ -15,14 +15,30 @@ class Database_processing:
     
     def Load_CSI(self,Dir_name):
         file_list = os.listdir(Dir_name)
+        Box = []
         #Muilt file
         for filename in file_list:
+            '''
             #Check direction
-            if(os.path.isfile==False)
+            if(os.path.isfile==False):
                 continue
+            '''
+            CSI = CSI_get(Dir_name+'\\'+filename)
             #Check quantity
-            Packet_quan = Check_Packet_Count(filename)
-            Muilt_CSI(L_Range,H_Rang)
+            Packet_quan = CSI.Check_Effection_Packet()
+            print(Dir_name+'\\'+filename)
+            for CSI_number in Packet_quan:
+                Box.append(CSI.Get_CSI(CSI_number))
+        return np.array(Box)
+
+if __name__ == '__main__':
+    DP = Database_processing("SS",['F:'])
+    DP.Load_CSI("F:\\location2\\1")
+
+
+                
+                
+            
 
         
             
