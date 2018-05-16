@@ -9,3 +9,8 @@ all:
 clear: main.exe main
 	rm main.exe
 	rm main
+
+debug:
+	clear
+	${CC} Analysis.h Analysis_Hugo.c main.c -o main -g -Wall
+	gdb -q main

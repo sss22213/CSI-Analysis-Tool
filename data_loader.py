@@ -18,22 +18,20 @@ class Database_processing:
         Box = []
         #Muilt file
         for filename in file_list:
-            '''
             #Check direction
             if(os.path.isfile==False):
                 continue
-            '''
             CSI = CSI_get(Dir_name+'\\'+filename)
             #Check quantity
             Packet_quan = CSI.Check_Effection_Packet()
             print(Dir_name+'\\'+filename)
             for CSI_number in Packet_quan:
                 Box.append(CSI.Get_CSI(CSI_number))
-        return np.array(Box)
+        return Box
 
 if __name__ == '__main__':
     DP = Database_processing("SS",['F:'])
-    DP.Load_CSI("F:\\location2\\1")
+    DP.Load_CSI("D:\\location2\\2")
 
 
                 

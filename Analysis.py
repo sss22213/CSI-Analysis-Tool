@@ -137,6 +137,6 @@ class CSI_get:
         return Box
 
 if __name__ == '__main__':
-    CSI = CSI_get("F:\\location2\\1\\0509_6020_1.dat")
+    CSI = CSI_get("D:\\location2\\1\\0509_6020_1.dat")
     print(CSI.Check_Effection_Packet())
    

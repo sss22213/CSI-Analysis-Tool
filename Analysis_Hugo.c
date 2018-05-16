@@ -2,7 +2,7 @@
 int* Packet_count_packet(Packet* obj)
 { 
     long Total_Num = Packet_count(obj);
-    unsigned int* Box = (unsigned int*)malloc(sizeof(unsigned int)*Total_Num);
+    int* Box = (unsigned int*)malloc(sizeof(unsigned int)*Total_Num);
     if(Box==NULL){printf("Memory Leak");exit(2);}
     long Packet_number = 0;
     long index = 0;
@@ -59,7 +59,7 @@ int Packet_count(Packet* obj)
         int len = *(Space + point_location + 16) + (*(Space + point_location + 17) << 8);
 	    int calc_len = (30 * (Nrx * Ntx * 8 * 2 + 3) + 7) / 8;
         if(calc_len==len)++count;
-    }while(point_location < obj->file_tail - 100);
+    }while(point_location < obj->file_tail - (field_len[1]+256*field_len[0]));
     return count;
 }
 int Find_ID_Position(unsigned char *Space,long *positive_l,int Positive,long tail)
