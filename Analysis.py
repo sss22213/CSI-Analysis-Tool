@@ -95,6 +95,36 @@ class CSI_get:
             count = count + 1
             CSI_Box.append(complex(int(result[prv+1:mid]),int(result[mid+1:tail])))
         return CSI_Box
+
+    def Get_CSI_Q(self,Packet_Number):
+        cmd = "main "+self.Path+" "+str(Packet_Number)+" CSI"
+        if self.Check_effection(Packet_Number):
+            return 1
+        result = str(check_output(cmd, shell=True))
+        if(len(result) < self.Get_Nrx(Packet_Number)*self.Get_Ntx(Packet_Number)*30):
+            return "CSI size is error"
+        pos1 = 0
+        pos2 = 0
+        pos3 = 0
+        buff = []
+        buff2 = []
+        buff3 = []
+        CSI_Box = []
+        for index in range(180):
+            pos3 = result.find('|',pos3+1)
+            pos2 = result.find(',',pos2+1)
+            pos1 = result.find('$',pos1+1)
+            buff.append(pos1)
+            buff2.append(pos2)
+            buff3.append(pos3)
+        count = 0
+        for index in buff:
+            prv = buff[count]
+            mid = buff2[count]
+            tail = buff3[count]
+            count = count + 1
+            CSI_Box.append(abs(complex(int(result[prv+1:mid]),int(result[mid+1:tail]))))
+        return CSI_Box
     
     def Complete_Format(self,Packet_Number):
         if self.Check_effection(Packet_Number):
@@ -112,9 +142,9 @@ class CSI_get:
             return CSI_Packet
         count = 0
         for Subcarrier in range(30):
-            for Nrx in range(3):
-                for Ntx in range(2):
-                    CSI[Subcarrier,Nrx,Ntx] = CSI_Packet[count]
+            for Nrx_n in range(len(Nrx)):
+                for Ntx_n in range(len(Ntx)):
+                    CSI[Subcarrier,Nrx_n,Ntx_n] = CSI_Packet[count]
                     count = count + 1
         return [Bfee_count,Perm,Nrx,Ntx,Noise,RSSI,CSI]
 
@@ -137,6 +167,6 @@ class CSI_get:
         return Box
 
 if __name__ == '__main__':
-    CSI = CSI_get("D:\\location2\\1\\0509_6020_1.dat")
-    print(CSI.Check_Effection_Packet())
+    CSI = CSI_get("F:\\CSI\\Location_CSI\\01\\170109_0814st_01.dat")
+    print(CSI.Get_CSI(1))
    

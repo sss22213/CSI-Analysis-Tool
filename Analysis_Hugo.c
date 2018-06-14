@@ -1,4 +1,17 @@
 #include "Analysis.h"
+int Find_ID_Position(unsigned char *Space,long *positive_l,int Positive,long tail)
+{
+    long point_location = 0;
+    for(int i = 0; i < Positive ; i++)
+    {
+        do{
+            point_location ++;
+            if(point_location >= tail)return 1;
+        }while(*(Space + point_location)!=187);
+    }
+    *positive_l = point_location + 1;
+    return 0;
+}
 int* Packet_count_packet(Packet* obj)
 { 
     long Total_Num = Packet_count(obj);
@@ -61,19 +74,6 @@ int Packet_count(Packet* obj)
         if(calc_len==len)++count;
     }while(point_location < obj->file_tail - (field_len[1]+256*field_len[0]));
     return count;
-}
-int Find_ID_Position(unsigned char *Space,long *positive_l,int Positive,long tail)
-{
-    long point_location = 0;
-    for(int i = 0; i < Positive ; i++)
-    {
-        do{
-            point_location ++;
-            if(point_location >= tail)return 1;
-        }while(*(Space + point_location)!=187);
-    }
-    *positive_l = point_location + 1;
-    return 0;
 }
 int Find_PacketID(Packet* buff,long Packet_number)
 {
