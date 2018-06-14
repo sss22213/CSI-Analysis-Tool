@@ -6,6 +6,10 @@ Ming Chuan University
 
 Department of Electronic Engineering
 
+Version 5(20180614)
+
+    Fix Muilt Bug
+
 Version 4(20180512)
 
     Fix Muilt Bug
