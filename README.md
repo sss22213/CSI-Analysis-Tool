@@ -6,6 +6,12 @@ Ming Chuan University
 
 Department of Electronic Engineering
 
+CHANGRLOG:
+
+Version 6(20180924)
+
+    data_loader add Create_New_Database_CSI_phase,Create_New_Database_RSSI
+
 Version 5(20180614)
 
     Fix Muilt Bug
@@ -45,4 +51,12 @@ First Version(20180503)
 
     Example file: python main.py (Need to add dat file's path into python source code)
 
-Using:  make
+Using:  
+
+Complier: make
+
+Create h5py database: example in data_loader.py
+
+Analysis dat packet: at Analysis.py
+
+python version: python 3

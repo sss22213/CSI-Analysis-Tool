@@ -125,7 +125,37 @@ class CSI_get:
             count = count + 1
             CSI_Box.append(abs(complex(int(result[prv+1:mid]),int(result[mid+1:tail]))))
         return CSI_Box
-    
+
+    def Get_CSI_Ang(self,Packet_Number):
+        cmd = "main "+self.Path+" "+str(Packet_Number)+" CSI"
+        if self.Check_effection(Packet_Number):
+            return 1
+        result = str(check_output(cmd, shell=True))
+        if(len(result) < self.Get_Nrx(Packet_Number)*self.Get_Ntx(Packet_Number)*30):
+            return "CSI size is error"
+        pos1 = 0
+        pos2 = 0
+        pos3 = 0
+        buff = []
+        buff2 = []
+        buff3 = []
+        CSI_Box = []
+        for index in range(180):
+            pos3 = result.find('|',pos3+1)
+            pos2 = result.find(',',pos2+1)
+            pos1 = result.find('$',pos1+1)
+            buff.append(pos1)
+            buff2.append(pos2)
+            buff3.append(pos3)
+        count = 0
+        for index in buff:
+            prv = buff[count]
+            mid = buff2[count]
+            tail = buff3[count]
+            count = count + 1
+            CSI_Box.append(np.angle(complex(int(result[prv+1:mid]),int(result[mid+1:tail]))))
+        return CSI_Box
+
     def Complete_Format(self,Packet_Number):
         if self.Check_effection(Packet_Number):
             return 1
